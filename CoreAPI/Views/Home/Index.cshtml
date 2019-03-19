@@ -1,0 +1,97 @@
+﻿<html>
+<head>
+    <title>.NET Core Web API</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container" style="margin-top:50px;">
+        <div class="row">
+            <div class="col-md-4">
+                <button class="btn btn-success" id="kitaplariGetir">Kitapları Getir</button>
+            </div>
+            <div class="col-md-8">
+                <div id="getBooksArea">
+                    <ul id="getBooks"></ul>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+                <button class="btn btn-warning" id="yazarlariGetir">Yazarları Getir</button> 
+            </div>
+            <div class="col-md-8">
+                <div id="getAuthorsArea">
+                    <ul id="getAuthors"></ul>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label><h2>Yazar Ekle</h2> </label><br />
+                    <input type="text" class="form-control" id="yazarAdi" placeholder="Yazar adı giriniz.." />
+                </div>
+                <div class="form-group">
+                    <input type="button" value="Yazar Ekle" id="yazarEkleBtn" class="btn-success form-control" />
+                </div><br />
+                <div id="yazarMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+$("#kitaplariGetir").click(function(){
+            $.ajax({
+               type: 'GET',
+               url: '/api/Service/GetBooks',
+               success: function(books){
+                    $("#getBooks").html("");
+                $.each(books, function(index, value){
+                    $("#getBooks").append("<li>Kitap Adı: <b>"+value.name+" - Yazarı: <b>"+value.authorName+"</b>");
+                });
+               }
+            });
+        });
+
+        $("#yazarlariGetir").click(function(){
+            $.ajax({
+               type: 'GET',
+               url: '/api/Service/GetAuthors',
+               success: function(books){
+                    $("#getAuthors").html("");
+                $.each(books, function(index, value){
+                    $("#getAuthors").append("<li>Yazar Adı: <b>"+value.authorName+" - Kitap Sayısı: <b>"+value.totalBook+"</b>");
+                });
+               }
+            });
+        });
+
+        $("#yazarEkleBtn").click(function(){
+            var yazarAdi = $("#yazarAdi").val();
+            if(yazarAdi == ""){
+                alert("Yazar adı giriniz!");
+            }else{
+              $.ajax({
+                type: 'POST',
+                url: '/api/Service/AddAuthor',
+                dataType: 'JSON',
+                data: {
+                    Name: yazarAdi
+                },
+                success: function(result){
+                   $("#yazarMessage").html("");
+                   $("#yazarMessage").html("<span class='text-success'>Yazar ekleme başarılı!</span>");
+                },
+                error: function(xhr){
+                    $("#yazarMessage").html("");
+                    $("#yazarMessage").html("<span class='text-danger'>Yazar ekleme başarısız!</span>");
+                }
+               });
+            }
+        });
+    </script>
+</body>
+</html>
